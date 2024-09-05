@@ -22,7 +22,15 @@ public class BookDAO {
             FROM book;
             """;
 
+    private static final String SAVE_BOOK = """
+            INSERT INTO book (title, author, year) VALUES (?,?,?)
+            """;
+
     public List<Book> getAllBooks() {
         return jdbcTemplate.query(GET_ALL_BOOKS, new BeanPropertyRowMapper<>(Book.class));
+    }
+
+    public void saveBook(Book book) {
+        jdbcTemplate.update(SAVE_BOOK, book.getTitle(), book.getAuthor(), book.getYear());
     }
 }

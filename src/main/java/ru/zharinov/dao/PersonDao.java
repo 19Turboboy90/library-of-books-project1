@@ -30,7 +30,7 @@ public class PersonDao {
             """;
 
     private static final String SAVE_PERSON = """
-            INSERT INTO person VALUES (?, ?);
+            INSERT INTO person (full_name, year_of_birth) VALUES (?, ?);
             """;
 
     private static final String UPDATE_PERSON_BY_ID = """
