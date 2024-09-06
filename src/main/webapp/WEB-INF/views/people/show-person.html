@@ -20,11 +20,12 @@
 </div>
 <br>
 <hr>
-
-<a th:href="@{/people/{id}/edit(id=${person.get().getId()})}">Редактировать</a>
-<br>
-<form th:method="DELETE" th:action="@{/people/{id}(id=${person.get().getId()})}">
-    <input type="submit" value="Удалить">
-</form>
+<div>
+    <a th:href="@{/people/{id}/edit(id=${person.get().getId()})}">Редактировать</a>
+    <br>
+    <form th:method="DELETE" th:action="@{/people/{id}(id=${person.get().getId()})}">
+        <input type="submit" value="Удалить">
+    </form>
+</div>
 </body>
 </html>
