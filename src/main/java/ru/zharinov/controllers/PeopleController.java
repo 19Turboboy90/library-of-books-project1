@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.zharinov.dao.PersonDao;
 import ru.zharinov.models.Person;
 
@@ -19,7 +16,6 @@ public class PeopleController {
 
     @GetMapping()
     public String showPeople(Model model) {
-        System.out.println(personDao.getAllPeople());
         model.addAttribute("people", personDao.getAllPeople());
         return "people/show-people";
     }
@@ -29,12 +25,41 @@ public class PeopleController {
         return "people/new-person";
     }
 
-    @PostMapping
+    @PostMapping()
     public String savePerson(@ModelAttribute("person") Person person, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "people/new-person";
         }
         personDao.savePerson(person);
+        return "redirect:/people";
+    }
+
+    @GetMapping("/{id}")
+    public String infoPerson(@PathVariable("id") int id, Model model) {
+        model.addAttribute("person", personDao.getPersonById(id));
+        model.addAttribute("books", personDao.getPersonWithBooks(id));
+        return "people/show-person";
+    }
+
+    @DeleteMapping("/{id}")
+    public String deletePerson(@PathVariable("id") int id) {
+        personDao.deletePersonById(id);
+        return "redirect:/people";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String showPerson(@PathVariable("id") int id, Model model) {
+        model.addAttribute("person", personDao.getPersonById(id));
+        return "people/edit-person";
+    }
+
+    @PatchMapping("/{id}")
+    public String updatePerson(@ModelAttribute("person") Person person, BindingResult bindingResult,
+                               @PathVariable("id") int id) {
+        if (bindingResult.hasErrors()) {
+            return "people/edit-person";
+        }
+        personDao.updatePersonById(id, person);
         return "redirect:/people";
     }
 }

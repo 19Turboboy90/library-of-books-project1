@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.zharinov.models.Book;
 import ru.zharinov.models.Person;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -23,12 +25,24 @@ public class PersonDao {
             FROM person;
             """;
 
-    private static final String GET_PERSON_BT_ID = """
+    private static final String GET_PERSON_BY_ID = """
             SELECT id, full_name, year_of_birth
             FROM person
             WHERE id = ?;
             """;
 
+    private static final String GET_PERSON_WITH_ALL_BOOKS = """
+            SELECT p.id,
+                   p.full_name,
+                   p.year_of_birth,
+                   b.id,
+                   b.title,
+                   b.author,
+                   b.year
+            FROM person p
+                     join book b On p.id = b.person_id
+            where p.id = ?;
+            """;
     private static final String SAVE_PERSON = """
             INSERT INTO person (full_name, year_of_birth) VALUES (?, ?);
             """;
@@ -49,8 +63,12 @@ public class PersonDao {
     }
 
     public Optional<Person> getPersonById(int id) {
-        return template.query(GET_PERSON_BT_ID, new BeanPropertyRowMapper<>(Person.class), id)
+        return template.query(GET_PERSON_BY_ID, new BeanPropertyRowMapper<>(Person.class), id)
                 .stream().filter(person -> person.getId() == id).findFirst();
+    }
+
+    public List<Book> getPersonWithBooks(int personId) {
+        return template.query(GET_PERSON_WITH_ALL_BOOKS, new BeanPropertyRowMapper<>(Book.class), personId);
     }
 
     public void savePerson(Person person) {
