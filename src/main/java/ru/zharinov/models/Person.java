@@ -20,8 +20,8 @@ public class Person {
             message = "The input format should be as follows - 'Ivanov Ivan Ivanovich'")
     private String fullName;
 
-    @Min(value = 1900, message = "Year should be greater than 1900")
-    @Max(value = 2100, message = "Year should be greater than 2100")
+    @Min(value = 1900, message = "The year must be at least 1900")
+    @Max(value = 2100, message = "The year should not be more than 2100")
     private int yearOfBirth;
     private List<Book> bookList;
 }

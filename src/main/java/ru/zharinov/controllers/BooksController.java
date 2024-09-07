@@ -1,5 +1,6 @@
 package ru.zharinov.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,8 +26,8 @@ public class BooksController {
         return "books/new-book";
     }
 
-    @PostMapping
-    public String saveBook(@ModelAttribute("book") Book book, BindingResult bindingResult) {
+    @PostMapping()
+    public String saveBook(@ModelAttribute("book") @Valid Book book, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "books/new-book";
         }
@@ -42,12 +43,16 @@ public class BooksController {
 
     @GetMapping("/{id}/edit")
     public String editBook(@PathVariable("id") int id, Model model) {
-        model.addAttribute("book", bookDao.getBookById(id));
+        model.addAttribute("book", bookDao.getBookById(id).get());
         return "books/edit-book";
     }
 
     @PatchMapping("/{id}")
-    public String updateBook(@PathVariable("id") int id, @ModelAttribute("book") Book book) {
+    public String updateBook(@PathVariable("id") int id, @ModelAttribute("book") @Valid Book book,
+                             BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "books/edit-book";
+        }
         bookDao.updateBookById(id, book);
         return "redirect:/books";
     }
