@@ -1,5 +1,6 @@
 package ru.zharinov.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +27,7 @@ public class PeopleController {
     }
 
     @PostMapping()
-    public String savePerson(@ModelAttribute("person") Person person, BindingResult bindingResult) {
+    public String savePerson(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "people/new-person";
         }
@@ -49,12 +50,12 @@ public class PeopleController {
 
     @GetMapping("/{id}/edit")
     public String editPerson(@PathVariable("id") int id, Model model) {
-        model.addAttribute("person", personDao.getPersonById(id));
+        model.addAttribute("person", personDao.getPersonById(id).get());
         return "people/edit-person";
     }
 
     @PatchMapping("/{id}")
-    public String updatePerson(@ModelAttribute("person") Person person, BindingResult bindingResult,
+    public String updatePerson(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult,
                                @PathVariable("id") int id) {
         if (bindingResult.hasErrors()) {
             return "people/edit-person";
