@@ -40,6 +40,12 @@ public class PersonDao {
             WHERE p.id = ?;
                         
             """;
+
+    private static final String GET_PERSON_BY_FULLNAME = """
+            SELECT id, full_name, year_of_birth
+            FROM person
+            WHERE full_name = ?;
+            """;
     private static final String SAVE_PERSON = """
             INSERT INTO person (full_name, year_of_birth) VALUES (?, ?);
             """;
@@ -57,6 +63,11 @@ public class PersonDao {
 
     public List<Person> getAllPeople() {
         return template.query(GET_ALL_PEOPLE, new BeanPropertyRowMapper<>(Person.class));
+    }
+
+    public Optional<Person> getPersonByFullName(String fullname) {
+        return template.query(GET_PERSON_BY_FULLNAME, new BeanPropertyRowMapper<>(Person.class), fullname)
+                .stream().filter(p -> p.getFullName().equals(fullname)).findFirst();
     }
 
     public Optional<Person> getPersonById(int id) {

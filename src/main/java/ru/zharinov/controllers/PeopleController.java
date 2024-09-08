@@ -8,12 +8,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.zharinov.dao.PersonDao;
 import ru.zharinov.models.Person;
+import ru.zharinov.util.PersonValidator;
 
 @Controller
 @RequestMapping("/people")
 @RequiredArgsConstructor
 public class PeopleController {
     private final PersonDao personDao;
+    private final PersonValidator personValidator;
 
     @GetMapping()
     public String showPeople(Model model) {
@@ -28,6 +30,7 @@ public class PeopleController {
 
     @PostMapping()
     public String savePerson(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult) {
+        personValidator.validate(person, bindingResult);
         if (bindingResult.hasErrors()) {
             return "people/new-person";
         }
@@ -56,6 +59,7 @@ public class PeopleController {
     @PatchMapping("/{id}")
     public String updatePerson(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult,
                                @PathVariable("id") int id) {
+        personValidator.validate(person, bindingResult);
         if (bindingResult.hasErrors()) {
             return "people/edit-person";
         }
