@@ -7,13 +7,16 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.zharinov.dao.BookDao;
+import ru.zharinov.dao.PersonDao;
 import ru.zharinov.models.Book;
+import ru.zharinov.models.Person;
 
 @Controller
 @RequestMapping("/books")
 @RequiredArgsConstructor
 public class BooksController {
     private final BookDao bookDao;
+    private final PersonDao personDao;
 
     @GetMapping
     public String showAllBooks(Model model) {
@@ -36,8 +39,9 @@ public class BooksController {
     }
 
     @GetMapping("/{id}")
-    public String infoBook(@PathVariable("id") int id, Model model) {
-        model.addAttribute("book", bookDao.getBookById(id));
+    public String infoBook(@PathVariable("id") int id, Model model, @ModelAttribute("person") Person person) {
+        model.addAttribute("people", personDao.getAllPeople());
+        model.addAttribute("book", bookDao.getBookById(id).get());
         return "books/show-book";
     }
 
@@ -60,6 +64,20 @@ public class BooksController {
     @DeleteMapping("/{id}")
     public String deleteBook(@PathVariable("id") int id) {
         bookDao.deleteBookById(id);
+        return "redirect:/books";
+    }
+
+    @PatchMapping("/{id}/add-person")
+    public String addPerson(@PathVariable("id") int bookId, @ModelAttribute("person") Person person) {
+        System.out.println(bookId);
+        System.out.println(person.getId());
+        bookDao.addPersonToBook(bookId, person.getId());
+        return "redirect:/books";
+    }
+
+    @PatchMapping("/{id}/remove-person")
+    public String removePerson(@PathVariable("id") int id) {
+        bookDao.removePersonByBookId(id);
         return "redirect:/books";
     }
 }

@@ -30,17 +30,15 @@ public class PersonDao {
             WHERE id = ?;
             """;
 
-    private static final String GET_PERSON_WITH_ALL_BOOKS = """
-            SELECT p.id,
-                   p.full_name,
-                   p.year_of_birth,
-                   b.id,
+    private static final String GET_ALL_BOOKS_BY_PERSON_ID = """
+            SELECT b.id,
                    b.title,
                    b.author,
                    b.year
-            FROM person p
-                     join book b On p.id = b.person_id
-            where p.id = ?;
+            FROM book b
+            JOIN person p ON b.person_id = p.id
+            WHERE p.id = ?;
+                        
             """;
     private static final String SAVE_PERSON = """
             INSERT INTO person (full_name, year_of_birth) VALUES (?, ?);
@@ -62,12 +60,14 @@ public class PersonDao {
     }
 
     public Optional<Person> getPersonById(int id) {
-        return template.query(GET_PERSON_BY_ID, new BeanPropertyRowMapper<>(Person.class), id)
-                .stream().filter(person -> person.getId() == id).findFirst();
-    }
+        var books = template.query(GET_ALL_BOOKS_BY_PERSON_ID, new BeanPropertyRowMapper<>(Book.class), id);
 
-    public List<Book> getPersonWithBooks(int personId) {
-        return template.query(GET_PERSON_WITH_ALL_BOOKS, new BeanPropertyRowMapper<>(Book.class), personId);
+        var person = template.query(GET_PERSON_BY_ID, new BeanPropertyRowMapper<>(Person.class), id)
+                .stream().filter(p -> p.getId() == id).findFirst();
+        if (!books.isEmpty() && person.isPresent()) {
+            person.get().setBookList(books);
+        }
+        return person;
     }
 
     public void savePerson(Person person) {

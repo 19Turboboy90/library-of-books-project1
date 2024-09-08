@@ -6,14 +6,14 @@
 </head>
 <body>
 <div>
-    <p th:text="${person.get().fullName + ', ' + person.get().yearOfBirth}"></p>
+    <p th:text="${person.getFullName() + ', ' + person.getYearOfBirth()}"></p>
     <hr>
-    <div th:if="${books.isEmpty()}">
+    <div th:if="${person.getBookList() == null}">
         <p>Пользователь пока не взял ни одной книги.</p>
     </div>
-    <div th:unless="${books.isEmpty()}">
+    <div th:unless="${person.getBookList() == null}">
         <p>Книги: </p>
-        <div th:each="book : ${books}"
+        <div th:each="book : ${person.getBookList()}"
              th:text="${book.getTitle() + ', ' + book.getAuthor() + ',' + book.getYear()}">
         </div>
     </div>
@@ -21,11 +21,12 @@
 <br>
 <hr>
 <div>
-    <a th:href="@{/people/{id}/edit(id=${person.get().getId()})}">Редактировать</a>
+    <a th:href="@{/people/{id}/edit(id=${person.getId()})}">Редактировать</a>
     <br>
-    <form th:method="DELETE" th:action="@{/people/{id}(id=${person.get().getId()})}">
+    <form th:method="DELETE" th:action="@{/people/{id}(id=${person.getId()})}">
         <input type="submit" value="Удалить">
     </form>
+    <a href="/people">На главное меню</a>
 </div>
 </body>
 </html>
