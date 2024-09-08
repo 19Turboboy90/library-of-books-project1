@@ -72,12 +72,12 @@ public class BooksController {
         System.out.println(bookId);
         System.out.println(person.getId());
         bookDao.addPersonToBook(bookId, person.getId());
-        return "redirect:/books";
+        return "redirect:/books/" + bookId;
     }
 
     @PatchMapping("/{id}/remove-person")
     public String removePerson(@PathVariable("id") int id) {
         bookDao.removePersonByBookId(id);
-        return "redirect:/books";
+        return "redirect:/books/" + id;
     }
 }
