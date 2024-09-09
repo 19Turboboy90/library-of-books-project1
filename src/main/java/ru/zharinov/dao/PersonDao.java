@@ -67,7 +67,7 @@ public class PersonDao {
 
     public Optional<Person> getPersonByFullName(String fullname) {
         return template.query(GET_PERSON_BY_FULLNAME, new BeanPropertyRowMapper<>(Person.class), fullname)
-                .stream().filter(p -> p.getFullName().equals(fullname)).findFirst();
+                .stream().filter(p -> p.getFullName().equals(fullname)).findAny();
     }
 
     public Optional<Person> getPersonById(int id) {
